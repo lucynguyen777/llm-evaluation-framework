@@ -66,14 +66,14 @@ if page == "Overview":
     if evaluations and len(evaluations) > 0:
         df = pd.DataFrame(evaluations)
 
-        avg_score = df["overall_score"].mean() if "overall_score" in df else 0
-        avg_accuracy = df["accuracy"].mean() if "accuracy" in df else 0
+        avg_score = float(df["overall_score"].mean()) if "overall_score" in df else 0.0
+        avg_accuracy = float(df["accuracy"].mean()) if "accuracy" in df else 0.0
         hallucination_rate = (
-            (df["hallucination"] == "high").sum() / len(df) * 100
+            float((df["hallucination"] == "high").sum()) / len(df) * 100
             if "hallucination" in df
-            else 0
+            else 0.0
         )
-        pass_rate = df["passed"].sum() / len(df) * 100 if "passed" in df else 0
+        pass_rate = float(df["passed"].sum()) / len(df) * 100 if "passed" in df else 0.0
 
         col1.metric("Average Score", round(avg_score, 2))
         col2.metric("Average Accuracy", round(avg_accuracy, 2))
@@ -232,8 +232,8 @@ elif page == "Dataset Explorer":
                     results = []
                     for _, item in df.iterrows():
                         result = eval_service.evaluate(
-                            prompt=item.get("prompt", ""),
-                            response=item.get("response", ""),
+                            prompt=str(item.get("prompt", "")),
+                            response=str(item.get("response", "")),
                             reference=item.get("reference", None),
                         )
                         result["prompt_id"] = item.get("id", str(_))

@@ -72,9 +72,9 @@ class ReportService:
 
         summary = {
             "total_evaluations": len(evaluations),
-            "pass_rate": (
-                (df.get("passed", pd.Series([False])).sum() / len(evaluations) * 100)
-                if "passed" in df.columns
+            "pass_rate": float(
+                (df["passed"].sum() / len(evaluations) * 100)
+                if "passed" in df.columns and hasattr(df["passed"], "sum")
                 else 0
             ),
             "average_scores": {},
@@ -124,31 +124,69 @@ class ReportService:
                 {
                     "model": model,
                     "count": len(model_df),
-                    "overall_score": round(
-                        model_df.get("overall_score", pd.Series([0])).mean(), 2
+                    "overall_score": float(
+                        round(
+                            (
+                                model_df["overall_score"].mean()
+                                if "overall_score" in model_df.columns
+                                else 0.0
+                            ),
+                            2,
+                        )
                     ),
-                    "instruction_following_score": round(
-                        model_df.get("instruction_following", pd.Series([0])).mean(), 2
+                    "instruction_following_score": float(
+                        round(
+                            (
+                                model_df["instruction_following"].mean()
+                                if "instruction_following" in model_df.columns
+                                else 0.0
+                            ),
+                            2,
+                        )
                     ),
-                    "accuracy_score": round(
-                        model_df.get("accuracy", pd.Series([0])).mean(), 2
+                    "accuracy_score": float(
+                        round(
+                            (
+                                model_df["accuracy"].mean()
+                                if "accuracy" in model_df.columns
+                                else 0.0
+                            ),
+                            2,
+                        )
                     ),
-                    "completeness_score": round(
-                        model_df.get("completeness", pd.Series([0])).mean(), 2
+                    "completeness_score": float(
+                        round(
+                            (
+                                model_df["completeness"].mean()
+                                if "completeness" in model_df.columns
+                                else 0.0
+                            ),
+                            2,
+                        )
                     ),
-                    "hallucination_rate": round(
-                        (
-                            model_df.get("hallucination", pd.Series(["low"])) == "high"
-                        ).sum()
-                        / len(model_df)
-                        * 100,
-                        2,
+                    "hallucination_rate": float(
+                        round(
+                            (
+                                (model_df["hallucination"] == "high").sum()
+                                if "hallucination" in model_df.columns
+                                else 0
+                            )
+                            / len(model_df)
+                            * 100,
+                            2,
+                        )
                     ),
-                    "pass_rate": round(
-                        model_df.get("passed", pd.Series([False])).sum()
-                        / len(model_df)
-                        * 100,
-                        2,
+                    "pass_rate": float(
+                        round(
+                            (
+                                model_df["passed"].sum()
+                                if "passed" in model_df.columns
+                                else 0
+                            )
+                            / len(model_df)
+                            * 100,
+                            2,
+                        )
                     ),
                 }
             )
