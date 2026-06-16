@@ -5,7 +5,9 @@ from typing import List, Optional
 class CompletenessEvaluator:
     """Evaluates whether all requested information is included in the response."""
 
-    def evaluate(self, prompt: str, response: str, required_fields: Optional[List[str]] = None) -> dict:
+    def evaluate(
+        self, prompt: str, response: str, required_fields: Optional[List[str]] = None
+    ) -> dict:
         """
         Evaluate completeness of response.
         """
@@ -15,7 +17,7 @@ class CompletenessEvaluator:
                 "completeness_score": 1,
                 "passed": False,
                 "coverage_percentage": 0.0,
-                "missing_fields": 1
+                "missing_fields": 1,
             }
 
         # Extract required fields from prompt if not provided
@@ -27,7 +29,12 @@ class CompletenessEvaluator:
             prompt_word_count = len(prompt.split())
             response_word_count = len(response.split())
             if response_word_count == 0:
-                return {"completeness_score": 1, "passed": False, "coverage_percentage": 0.0, "missing_fields": 0}
+                return {
+                    "completeness_score": 1,
+                    "passed": False,
+                    "coverage_percentage": 0.0,
+                    "missing_fields": 0,
+                }
 
             ratio = response_word_count / max(prompt_word_count, 1)
             if ratio >= 0.8:
@@ -45,7 +52,7 @@ class CompletenessEvaluator:
                 "completeness_score": score,
                 "passed": score >= 3,
                 "coverage_percentage": ratio * 100,
-                "missing_fields": 0
+                "missing_fields": 0,
             }
 
         # Check if all required fields are present
@@ -71,7 +78,7 @@ class CompletenessEvaluator:
             "completeness_score": score,
             "passed": score >= 3,
             "coverage_percentage": coverage * 100,
-            "missing_fields": missing_count
+            "missing_fields": missing_count,
         }
 
     def _extract_required_fields(self, prompt: str) -> List[str]:
@@ -80,20 +87,26 @@ class CompletenessEvaluator:
 
         # Look for comma-separated items (like "A, B, C, D and E")
         # Match patterns like "items: A, B, C" or "A, B and C"
-        items_pattern = re.findall(r'\b([A-Z])\b[,|\s|and]*', prompt)
+        items_pattern = re.findall(r"\b([A-Z])\b[,|\s|and]*", prompt)
         if items_pattern and len(items_pattern) >= 2:
             required.extend(items_pattern)
 
         keywords = [
-            "include", "provide", "must have", "required",
-            "need", "should contain", "list", "mention"
+            "include",
+            "provide",
+            "must have",
+            "required",
+            "need",
+            "should contain",
+            "list",
+            "mention",
         ]
         for keyword in keywords:
             if keyword in prompt.lower():
                 idx = prompt.lower().find(keyword)
-                segment = prompt[idx:idx + 100]
+                segment = prompt[idx : idx + 100]
                 quoted = re.findall(r'"([^"]+)"', segment)
-                caps = re.findall(r'\b([A-Z][a-z]+)\b', segment)
+                caps = re.findall(r"\b([A-Z][a-z]+)\b", segment)
                 required.extend(quoted + caps)
 
         return list(set(required))

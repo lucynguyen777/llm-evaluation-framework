@@ -20,10 +20,7 @@ class AccuracyEvaluator:
 
         score = self._compare_with_reference(response, reference)
 
-        return {
-            "accuracy_score": score,
-            "passed": score >= 3
-        }
+        return {"accuracy_score": score, "passed": score >= 3}
 
     def _compare_with_reference(self, response: str, reference: str) -> int:
         """Compare response against reference answer via word overlap."""
@@ -51,12 +48,40 @@ class AccuracyEvaluator:
 
     def _tokenize(self, text: str) -> set:
         """Tokenize text into clean word set."""
-        words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
+        words = re.findall(r"\b[a-zA-Z]+\b", text.lower())
         # Filter out common stop words that inflate similarity
         stop_words = {
-            "the", "a", "an", "is", "are", "was", "were", "be", "been",
-            "in", "on", "at", "to", "for", "of", "and", "or", "but",
-            "it", "its", "this", "that", "these", "those",
-            "with", "without", "by", "from", "as", "has", "had", "have",
+            "the",
+            "a",
+            "an",
+            "is",
+            "are",
+            "was",
+            "were",
+            "be",
+            "been",
+            "in",
+            "on",
+            "at",
+            "to",
+            "for",
+            "of",
+            "and",
+            "or",
+            "but",
+            "it",
+            "its",
+            "this",
+            "that",
+            "these",
+            "those",
+            "with",
+            "without",
+            "by",
+            "from",
+            "as",
+            "has",
+            "had",
+            "have",
         }
         return {w for w in words if w not in stop_words}

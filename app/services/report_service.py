@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 
+
 class ReportService:
     """Generates evaluation reports in various formats."""
 
@@ -13,9 +14,7 @@ class ReportService:
         self.output_dir.mkdir(exist_ok=True)
 
     def save_evaluation_csv(
-        self,
-        evaluations: List[Dict[str, Any]],
-        filename: Optional[str] = None
+        self, evaluations: List[Dict[str, Any]], filename: Optional[str] = None
     ) -> str:
         """Save evaluations to CSV file."""
         if not filename:
@@ -48,9 +47,7 @@ class ReportService:
         return str(filepath)
 
     def save_evaluation_json(
-        self,
-        evaluations: List[Dict[str, Any]],
-        filename: Optional[str] = None
+        self, evaluations: List[Dict[str, Any]], filename: Optional[str] = None
     ) -> str:
         """Save evaluations to JSON file."""
         if not filename:
@@ -59,14 +56,13 @@ class ReportService:
 
         filepath = self.output_dir / filename
 
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             json.dump(evaluations, f, indent=2)
 
         return str(filepath)
 
     def generate_summary_report(
-        self,
-        evaluations: List[Dict[str, Any]]
+        self, evaluations: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
         """Generate summary statistics from evaluations."""
         if not evaluations:
@@ -76,14 +72,22 @@ class ReportService:
 
         summary = {
             "total_evaluations": len(evaluations),
-            "pass_rate": (df.get("passed", pd.Series([False])).sum() / len(evaluations) * 100)
-            if "passed" in df.columns else 0,
+            "pass_rate": (
+                (df.get("passed", pd.Series([False])).sum() / len(evaluations) * 100)
+                if "passed" in df.columns
+                else 0
+            ),
             "average_scores": {},
             "hallucination_breakdown": {},
         }
 
         # Calculate average scores
-        score_columns = ["instruction_following", "accuracy", "completeness", "overall_score"]
+        score_columns = [
+            "instruction_following",
+            "accuracy",
+            "completeness",
+            "overall_score",
+        ]
         for col in score_columns:
             if col in df.columns:
                 summary["average_scores"][col] = round(df[col].mean(), 2)
@@ -100,8 +104,7 @@ class ReportService:
         return summary
 
     def generate_model_comparison(
-        self,
-        evaluations: List[Dict[str, Any]]
+        self, evaluations: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """Generate comparison between models."""
         if not evaluations:
@@ -117,18 +120,38 @@ class ReportService:
         for model in df["model"].unique():
             model_df = df[df["model"] == model]
 
-            comparison.append({
-                "model": model,
-                "count": len(model_df),
-                "overall_score": round(model_df.get("overall_score", pd.Series([0])).mean(), 2),
-                "instruction_following_score": round(model_df.get("instruction_following", pd.Series([0])).mean(), 2),
-                "accuracy_score": round(model_df.get("accuracy", pd.Series([0])).mean(), 2),
-                "completeness_score": round(model_df.get("completeness", pd.Series([0])).mean(), 2),
-                "hallucination_rate": round(
-                    (model_df.get("hallucination", pd.Series(["low"])) == "high").sum() / len(model_df) * 100, 2
-                ),
-                "pass_rate": round(model_df.get("passed", pd.Series([False])).sum() / len(model_df) * 100, 2),
-            })
+            comparison.append(
+                {
+                    "model": model,
+                    "count": len(model_df),
+                    "overall_score": round(
+                        model_df.get("overall_score", pd.Series([0])).mean(), 2
+                    ),
+                    "instruction_following_score": round(
+                        model_df.get("instruction_following", pd.Series([0])).mean(), 2
+                    ),
+                    "accuracy_score": round(
+                        model_df.get("accuracy", pd.Series([0])).mean(), 2
+                    ),
+                    "completeness_score": round(
+                        model_df.get("completeness", pd.Series([0])).mean(), 2
+                    ),
+                    "hallucination_rate": round(
+                        (
+                            model_df.get("hallucination", pd.Series(["low"])) == "high"
+                        ).sum()
+                        / len(model_df)
+                        * 100,
+                        2,
+                    ),
+                    "pass_rate": round(
+                        model_df.get("passed", pd.Series([False])).sum()
+                        / len(model_df)
+                        * 100,
+                        2,
+                    ),
+                }
+            )
 
         # Sort by overall score
         comparison.sort(key=lambda x: x["overall_score"], reverse=True)

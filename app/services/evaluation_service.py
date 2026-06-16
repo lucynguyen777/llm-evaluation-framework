@@ -13,6 +13,7 @@ from evaluators import (
     GuidelineEngine,
 )
 
+
 class EvaluationService:
     """Main service for evaluating LLM responses."""
 
@@ -29,7 +30,7 @@ class EvaluationService:
         prompt: str,
         response: str,
         reference: Optional[str] = None,
-        context: Optional[str] = None
+        context: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Perform comprehensive evaluation of LLM response.
@@ -48,19 +49,21 @@ class EvaluationService:
             instruction_result.get("instruction_following_score", 3),
             accuracy_result.get("accuracy_score", 3),
             completeness_result.get("completeness_score", 3),
-            hallucination_result.get("hallucination_risk", "medium")
+            hallucination_result.get("hallucination_risk", "medium"),
         )
 
         # Determine if passed
         passed = (
-            instruction_result.get("passed", False) and
-            accuracy_result.get("passed", False) and
-            completeness_result.get("passed", False) and
-            hallucination_result.get("passed", False)
+            instruction_result.get("passed", False)
+            and accuracy_result.get("passed", False)
+            and completeness_result.get("passed", False)
+            and hallucination_result.get("passed", False)
         )
 
         return {
-            "instruction_following": instruction_result.get("instruction_following_score"),
+            "instruction_following": instruction_result.get(
+                "instruction_following_score"
+            ),
             "accuracy": accuracy_result.get("accuracy_score"),
             "completeness": completeness_result.get("completeness_score"),
             "hallucination": hallucination_result.get("hallucination_risk"),
@@ -73,7 +76,7 @@ class EvaluationService:
                 "accuracy": accuracy_result,
                 "completeness": completeness_result,
                 "hallucination": hallucination_result,
-            }
+            },
         }
 
     def _calculate_overall_score(
@@ -81,15 +84,11 @@ class EvaluationService:
         instruction_score: int,
         accuracy_score: int,
         completeness_score: int,
-        hallucination_risk: str
+        hallucination_risk: str,
     ) -> float:
         """Calculate weighted overall score."""
         # Convert hallucination risk to score
-        hallucination_score_map = {
-            "low": 5,
-            "medium": 3,
-            "high": 1
-        }
+        hallucination_score_map = {"low": 5, "medium": 3, "high": 1}
         hallucination_score = hallucination_score_map.get(hallucination_risk, 3)
 
         # Weighted average
@@ -97,14 +96,14 @@ class EvaluationService:
             "instruction": 0.3,
             "accuracy": 0.3,
             "completeness": 0.2,
-            "hallucination": 0.2
+            "hallucination": 0.2,
         }
 
         overall = (
-            instruction_score * weights["instruction"] +
-            accuracy_score * weights["accuracy"] +
-            completeness_score * weights["completeness"] +
-            hallucination_score * weights["hallucination"]
+            instruction_score * weights["instruction"]
+            + accuracy_score * weights["accuracy"]
+            + completeness_score * weights["completeness"]
+            + hallucination_score * weights["hallucination"]
         )
 
         return round(overall, 2)

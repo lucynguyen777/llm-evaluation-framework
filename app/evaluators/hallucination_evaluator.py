@@ -8,7 +8,7 @@ class HallucinationEvaluator:
         self,
         response: str,
         reference: Optional[str] = None,
-        context: Optional[str] = None
+        context: Optional[str] = None,
     ) -> dict:
         """Evaluate hallucination risk in response."""
         hallucination_risk = "low"
@@ -16,11 +16,7 @@ class HallucinationEvaluator:
 
         # Empty response → high risk (nothing to verify)
         if not response.strip():
-            return {
-                "hallucination_risk": "high",
-                "confidence": 0.85,
-                "passed": False
-            }
+            return {"hallucination_risk": "high", "confidence": 0.85, "passed": False}
 
         if reference and reference.strip():
             hallucination_risk, confidence = self._detect_against_reference(
@@ -37,7 +33,7 @@ class HallucinationEvaluator:
         return {
             "hallucination_risk": hallucination_risk,
             "confidence": round(confidence, 2),
-            "passed": hallucination_risk == "low"
+            "passed": hallucination_risk == "low",
         }
 
     def _detect_against_reference(self, response: str, reference: str) -> tuple:
@@ -63,7 +59,11 @@ class HallucinationEvaluator:
         response_words = set(response.lower().split())
         context_words = set(context.lower().split())
 
-        overlap = len(response_words & context_words) / len(response_words) if response_words else 0
+        overlap = (
+            len(response_words & context_words) / len(response_words)
+            if response_words
+            else 0
+        )
 
         if overlap < 0.3:
             return "high", 0.85

@@ -1,4 +1,9 @@
-from .evaluation import EvaluationRequest, EvaluationResult, DatasetEvaluationRequest, ModelComparison
+from .evaluation import (
+    EvaluationRequest,
+    EvaluationResult,
+    DatasetEvaluationRequest,
+    ModelComparison,
+)
 
 __all__ = [
     "EvaluationRequest",

@@ -1,5 +1,4 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
 import json
 from pathlib import Path
 
@@ -7,14 +6,13 @@ from schemas.evaluation import (
     EvaluationRequest,
     EvaluationResult,
     DatasetEvaluationRequest,
-    ModelComparison,
 )
 from services import EvaluationService, ReportService
 
 app = FastAPI(
     title="LLM Evaluation Framework",
     description="Production-quality LLM evaluation system",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Initialize services
@@ -30,12 +28,7 @@ async def root():
     return {
         "name": "LLM Evaluation Framework",
         "version": "1.0.0",
-        "endpoints": [
-            "/docs",
-            "/evaluate",
-            "/batch-evaluate",
-            "/leaderboard"
-        ]
+        "endpoints": ["/docs", "/evaluate", "/batch-evaluate", "/leaderboard"],
     }
 
 
@@ -46,7 +39,7 @@ async def evaluate(request: EvaluationRequest):
         result = evaluation_service.evaluate(
             prompt=request.prompt,
             response=request.response,
-            reference=request.reference
+            reference=request.reference,
         )
 
         # Add model info if provided
@@ -65,10 +58,12 @@ async def batch_evaluate(request: DatasetEvaluationRequest):
     try:
         filepath = Path(request.dataset_path)
         if not filepath.exists():
-            raise HTTPException(status_code=404, detail=f"File not found: {request.dataset_path}")
+            raise HTTPException(
+                status_code=404, detail=f"File not found: {request.dataset_path}"
+            )
 
         # Load dataset
-        with open(filepath, 'r') as f:
+        with open(filepath, "r") as f:
             dataset = json.load(f)
 
         evaluations = []
@@ -77,7 +72,7 @@ async def batch_evaluate(request: DatasetEvaluationRequest):
                 result = evaluation_service.evaluate(
                     prompt=item.get("prompt", ""),
                     response=item.get("response", ""),
-                    reference=item.get("reference", None)
+                    reference=item.get("reference", None),
                 )
 
                 result["prompt_id"] = item.get("id", i)
@@ -96,12 +91,9 @@ async def batch_evaluate(request: DatasetEvaluationRequest):
 
         return {
             "total_evaluated": len(evaluations),
-            "reports": {
-                "csv": csv_path,
-                "json": json_path
-            },
+            "reports": {"csv": csv_path, "json": json_path},
             "summary": summary,
-            "model_comparison": model_comparison
+            "model_comparison": model_comparison,
         }
 
     except Exception as e:
@@ -124,15 +116,12 @@ async def leaderboard():
 
         latest_report = max(json_reports, key=lambda p: p.stat().st_mtime)
 
-        with open(latest_report, 'r') as f:
+        with open(latest_report, "r") as f:
             evaluations = json.load(f)
 
         model_comparison = report_service.generate_model_comparison(evaluations)
 
-        return {
-            "total_models": len(model_comparison),
-            "leaderboard": model_comparison
-        }
+        return {"total_models": len(model_comparison), "leaderboard": model_comparison}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -140,4 +129,5 @@ async def leaderboard():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

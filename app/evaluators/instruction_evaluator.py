@@ -1,6 +1,3 @@
-import re
-
-
 class InstructionEvaluator:
     """Evaluates how well a response follows instructions."""
 
@@ -10,10 +7,7 @@ class InstructionEvaluator:
 
         # Empty response penalty
         if not response.strip():
-            return {
-                "instruction_following_score": 1,
-                "passed": False
-            }
+            return {"instruction_following_score": 1, "passed": False}
 
         # Heuristic: Check if basic instructions are followed
         # For a real implementation, we would use an LLM-as-a-judge here.
@@ -35,7 +29,4 @@ class InstructionEvaluator:
 
         score = max(1, score - penalties)
 
-        return {
-            "instruction_following_score": score,
-            "passed": score >= 4
-        }
+        return {"instruction_following_score": score, "passed": score >= 4}

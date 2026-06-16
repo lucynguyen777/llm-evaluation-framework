@@ -14,17 +14,21 @@ st.set_page_config(
     page_title="LLM Evaluation Framework",
     page_icon="🤖",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
+
 
 # Initialize services
 @st.cache_resource
 def init_services():
     eval_service = EvaluationService(
-        guideline_config_path=str(Path(__file__).parent.parent / "app/configs/guidelines.yaml")
+        guideline_config_path=str(
+            Path(__file__).parent.parent / "app/configs/guidelines.yaml"
+        )
     )
     report_service = ReportService()
     return eval_service, report_service
+
 
 eval_service, report_service = init_services()
 
@@ -33,10 +37,11 @@ st.sidebar.title("🤖 LLM Evaluation")
 st.sidebar.markdown("---")
 page = st.sidebar.radio(
     "Navigate",
-    ["Overview", "Model Comparison", "Dataset Explorer", "Guideline Checker"]
+    ["Overview", "Model Comparison", "Dataset Explorer", "Guideline Checker"],
 )
 
 REPORTS_DIR = Path(__file__).parent.parent / "reports"
+
 
 def load_latest_report():
     """Load the latest evaluation report."""
@@ -48,6 +53,7 @@ def load_latest_report():
     latest = max(json_reports, key=lambda p: p.stat().st_mtime)
     with open(latest) as f:
         return json.load(f)
+
 
 if page == "Overview":
     st.title("📊 Evaluation Overview")
@@ -62,7 +68,11 @@ if page == "Overview":
 
         avg_score = df["overall_score"].mean() if "overall_score" in df else 0
         avg_accuracy = df["accuracy"].mean() if "accuracy" in df else 0
-        hallucination_rate = (df["hallucination"] == "high").sum() / len(df) * 100 if "hallucination" in df else 0
+        hallucination_rate = (
+            (df["hallucination"] == "high").sum() / len(df) * 100
+            if "hallucination" in df
+            else 0
+        )
         pass_rate = df["passed"].sum() / len(df) * 100 if "passed" in df else 0
 
         col1.metric("Average Score", round(avg_score, 2))
@@ -74,7 +84,12 @@ if page == "Overview":
 
         # Score distributions
         st.subheader("Score Distribution")
-        score_cols = ["instruction_following", "accuracy", "completeness", "overall_score"]
+        score_cols = [
+            "instruction_following",
+            "accuracy",
+            "completeness",
+            "overall_score",
+        ]
         score_data = {}
         for col in score_cols:
             if col in df.columns:
@@ -93,12 +108,18 @@ if page == "Overview":
                 values=hall_counts.values,
                 names=hall_counts.index,
                 title="Hallucination Risk",
-                color_discrete_map={"low": "#00cc96", "medium": "#ffa15a", "high": "#ef553b"}
+                color_discrete_map={
+                    "low": "#00cc96",
+                    "medium": "#ffa15a",
+                    "high": "#ef553b",
+                },
             )
             st.plotly_chart(fig, use_container_width=True)
 
     else:
-        st.info("No evaluation reports found. Run a batch evaluation or use the Dataset Explorer to upload data.")
+        st.info(
+            "No evaluation reports found. Run a batch evaluation or use the Dataset Explorer to upload data."
+        )
 
 elif page == "Model Comparison":
     st.title("🏆 Model Comparison")
@@ -114,28 +135,41 @@ elif page == "Model Comparison":
 
             # Ranking table
             st.subheader("Ranking Table")
-            display_cols = ["model", "overall_score", "instruction_following_score",
-                            "accuracy_score", "completeness_score", "hallucination_rate", "pass_rate"]
+            display_cols = [
+                "model",
+                "overall_score",
+                "instruction_following_score",
+                "accuracy_score",
+                "completeness_score",
+                "hallucination_rate",
+                "pass_rate",
+            ]
             display_df = comp_df[[c for c in display_cols if c in comp_df.columns]]
             st.dataframe(display_df, use_container_width=True)
 
             # Radar chart
             st.subheader("Radar Chart")
-            metrics = ["overall_score", "instruction_following_score", "accuracy_score", "completeness_score"]
+            metrics = [
+                "overall_score",
+                "instruction_following_score",
+                "accuracy_score",
+                "completeness_score",
+            ]
             fig = go.Figure()
 
             for _, row in comp_df.iterrows():
                 values = [row.get(m, 0) for m in metrics] + [row.get(metrics[0], 0)]
-                fig.add_trace(go.Scatterpolar(
-                    r=values,
-                    theta=metrics + [metrics[0]],
-                    fill="toself",
-                    name=row["model"]
-                ))
+                fig.add_trace(
+                    go.Scatterpolar(
+                        r=values,
+                        theta=metrics + [metrics[0]],
+                        fill="toself",
+                        name=row["model"],
+                    )
+                )
 
             fig.update_layout(
-                polar=dict(radialaxis=dict(visible=True, range=[0, 5])),
-                showlegend=True
+                polar=dict(radialaxis=dict(visible=True, range=[0, 5])), showlegend=True
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -143,9 +177,12 @@ elif page == "Model Comparison":
             st.subheader("Score Distribution by Model")
             if "model" in df.columns and "overall_score" in df.columns:
                 fig = px.violin(
-                    df, x="model", y="overall_score",
-                    box=True, points="all",
-                    title="Overall Score Distribution"
+                    df,
+                    x="model",
+                    y="overall_score",
+                    box=True,
+                    points="all",
+                    title="Overall Score Distribution",
                 )
                 st.plotly_chart(fig, use_container_width=True)
         else:
@@ -177,9 +214,15 @@ elif page == "Dataset Explorer":
                     "Overall Score Range",
                     float(df["overall_score"].min()),
                     float(df["overall_score"].max()),
-                    (float(df["overall_score"].min()), float(df["overall_score"].max()))
+                    (
+                        float(df["overall_score"].min()),
+                        float(df["overall_score"].max()),
+                    ),
                 )
-                filtered = df[(df["overall_score"] >= score_range[0]) & (df["overall_score"] <= score_range[1])]
+                filtered = df[
+                    (df["overall_score"] >= score_range[0])
+                    & (df["overall_score"] <= score_range[1])
+                ]
                 st.write(f"Showing {len(filtered)} of {len(df)} examples")
                 st.dataframe(filtered, use_container_width=True)
 
@@ -191,7 +234,7 @@ elif page == "Dataset Explorer":
                         result = eval_service.evaluate(
                             prompt=item.get("prompt", ""),
                             response=item.get("response", ""),
-                            reference=item.get("reference", None)
+                            reference=item.get("reference", None),
                         )
                         result["prompt_id"] = item.get("id", str(_))
                         result["model"] = item.get("model", "unknown")
@@ -204,7 +247,9 @@ elif page == "Dataset Explorer":
 
                     st.success("Evaluation complete!")
                     st.json(summary)
-                    st.info(f"Reports saved to:\n- CSV: {csv_path}\n- JSON: {json_path}")
+                    st.info(
+                        f"Reports saved to:\n- CSV: {csv_path}\n- JSON: {json_path}"
+                    )
 
         except Exception as e:
             st.error(f"Error loading dataset: {e}")
@@ -222,20 +267,20 @@ elif page == "Guideline Checker":
         prompt = st.text_area(
             "Prompt / Instruction",
             height=200,
-            placeholder="Enter the original prompt/instruction..."
+            placeholder="Enter the original prompt/instruction...",
         )
 
     with col2:
         response = st.text_area(
-            "LLM Response",
-            height=200,
-            placeholder="Enter the LLM response..."
+            "LLM Response", height=200, placeholder="Enter the LLM response..."
         )
 
     if st.button("Check Compliance", type="primary"):
         if prompt and response:
             with st.spinner("Running compliance checks..."):
-                compliance = eval_service.guideline_engine.check_compliance(prompt, response)
+                compliance = eval_service.guideline_engine.check_compliance(
+                    prompt, response
+                )
                 pass_rate = eval_service.guideline_engine.get_pass_rate(compliance)
                 passed = eval_service.guideline_engine.get_passed_rules(compliance)
                 total = eval_service.guideline_engine.get_total_rules()
@@ -250,7 +295,9 @@ elif page == "Guideline Checker":
                 st.subheader("Detailed Check Results")
                 for rule_name, passed_flag in compliance.items():
                     icon = "✅" if passed_flag else "❌"
-                    st.write(f"{icon} **{rule_name.replace('_', ' ').title()}**: {'Passed' if passed_flag else 'Failed'}")
+                    st.write(
+                        f"{icon} **{rule_name.replace('_', ' ').title()}**: {'Passed' if passed_flag else 'Failed'}"
+                    )
 
                 # Run full evaluation
                 st.subheader("Full Evaluation")

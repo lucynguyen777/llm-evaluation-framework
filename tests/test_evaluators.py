@@ -1,7 +1,6 @@
 """Unit tests for LLM Evaluation Framework evaluators."""
 
 import sys
-import json
 from pathlib import Path
 
 # Add parent to path for imports
@@ -20,7 +19,7 @@ def test_instruction_evaluator_format():
 
     result = evaluator.evaluate(
         prompt="Answer only in English and include Verdict and Reason.",
-        response="Verdict: Correct\nReason: This follows instructions."
+        response="Verdict: Correct\nReason: This follows instructions.",
     )
 
     assert result["instruction_following_score"] >= 4
@@ -33,7 +32,7 @@ def test_instruction_evaluator_fail():
 
     result = evaluator.evaluate(
         prompt="Answer only in English and include Verdict and Reason.",
-        response="Yes, the sky is blue."
+        response="Yes, the sky is blue.",
     )
 
     assert result["instruction_following_score"] < 4
@@ -45,8 +44,7 @@ def test_instruction_evaluator_language_constraint():
     evaluator = InstructionEvaluator()
 
     result = evaluator.evaluate(
-        prompt="Answer only in English.",
-        response="This is an English response."
+        prompt="Answer only in English.", response="This is an English response."
     )
 
     assert result["instruction_following_score"] >= 4
@@ -58,7 +56,7 @@ def test_accuracy_evaluator_exact_match():
 
     result = evaluator.evaluate(
         response="Paris is the capital of France.",
-        reference="Paris is the capital of France."
+        reference="Paris is the capital of France.",
     )
 
     assert result["accuracy_score"] >= 4
@@ -69,8 +67,7 @@ def test_accuracy_evaluator_partial_match():
     evaluator = AccuracyEvaluator()
 
     result = evaluator.evaluate(
-        response="Paris is the capital.",
-        reference="Paris is the capital of France."
+        response="Paris is the capital.", reference="Paris is the capital of France."
     )
 
     assert 2 <= result["accuracy_score"] <= 4
@@ -82,7 +79,7 @@ def test_accuracy_evaluator_no_match():
 
     result = evaluator.evaluate(
         response="London is the capital of England.",
-        reference="Paris is the capital of France."
+        reference="Paris is the capital of France.",
     )
 
     assert result["accuracy_score"] <= 2
@@ -92,10 +89,7 @@ def test_accuracy_evaluator_no_reference():
     """Test accuracy evaluator without reference."""
     evaluator = AccuracyEvaluator()
 
-    result = evaluator.evaluate(
-        response="Any response here.",
-        reference=""
-    )
+    result = evaluator.evaluate(response="Any response here.", reference="")
 
     assert result["accuracy_score"] == 0
 
@@ -105,8 +99,7 @@ def test_completeness_evaluator_full():
     evaluator = CompletenessEvaluator()
 
     result = evaluator.evaluate(
-        prompt="List 3 items: A, B and C.",
-        response="A, B, and C are three items."
+        prompt="List 3 items: A, B and C.", response="A, B, and C are three items."
     )
 
     assert result["completeness_score"] >= 3
@@ -117,8 +110,7 @@ def test_completeness_evaluator_partial():
     evaluator = CompletenessEvaluator()
 
     result = evaluator.evaluate(
-        prompt="List 5 items: A, B, C, D and E.",
-        response="A and B are items."
+        prompt="List 5 items: A, B, C, D and E.", response="A and B are items."
     )
 
     assert result["completeness_score"] <= 3
@@ -128,10 +120,7 @@ def test_completeness_evaluator_empty():
     """Test completeness evaluator with empty response."""
     evaluator = CompletenessEvaluator()
 
-    result = evaluator.evaluate(
-        prompt="Answer the question.",
-        response=""
-    )
+    result = evaluator.evaluate(prompt="Answer the question.", response="")
 
     assert result["completeness_score"] == 1
 
@@ -142,7 +131,7 @@ def test_hallucination_evaluator_low_risk():
 
     result = evaluator.evaluate(
         response="The sky is blue due to Rayleigh scattering.",
-        reference="The sky appears blue because of Rayleigh scattering."
+        reference="The sky appears blue because of Rayleigh scattering.",
     )
 
     assert result["hallucination_risk"] == "low"
@@ -155,7 +144,7 @@ def test_hallucination_evaluator_high_risk():
 
     result = evaluator.evaluate(
         response="The sky is green due to atmospheric absorption.",
-        reference="The sky appears blue because of Rayleigh scattering."
+        reference="The sky appears blue because of Rayleigh scattering.",
     )
 
     assert result["hallucination_risk"] == "high"
@@ -167,8 +156,7 @@ def test_hallucination_evaluator_no_reference():
     evaluator = HallucinationEvaluator()
 
     result = evaluator.evaluate(
-        response="Some response without reference.",
-        reference=""
+        response="Some response without reference.", reference=""
     )
 
     assert result["hallucination_risk"] == "medium"
@@ -191,7 +179,7 @@ def test_guideline_engine_check_compliance():
 
     compliance = engine.check_compliance(
         prompt="Answer only in English and include Verdict and Reason.",
-        response="Verdict: Correct\nReason: The answer follows instructions."
+        response="Verdict: Correct\nReason: The answer follows instructions.",
     )
 
     assert "include_verdict" in compliance
@@ -210,7 +198,7 @@ def test_guideline_engine_pass_rate():
     compliance = {
         "include_verdict": True,
         "include_reason": True,
-        "answer_in_english": True
+        "answer_in_english": True,
     }
 
     pass_rate = engine.get_pass_rate(compliance)
@@ -225,7 +213,7 @@ def test_guideline_engine_pass_rate_partial():
     compliance = {
         "include_verdict": True,
         "include_reason": False,
-        "answer_in_english": True
+        "answer_in_english": True,
     }
 
     pass_rate = engine.get_pass_rate(compliance)
@@ -242,7 +230,7 @@ def test_integration_end_to_end():
     result = service.evaluate(
         prompt="Answer only in English and include Verdict and Reason. Is the sky blue?",
         response="Verdict: True\nReason: The sky is blue due to Rayleigh scattering.",
-        reference="The sky appears blue because of Rayleigh scattering."
+        reference="The sky appears blue because of Rayleigh scattering.",
     )
 
     assert "instruction_following" in result
@@ -274,7 +262,7 @@ def test_multi_model_comparison():
         result = service.evaluate(
             prompt="Answer only in English and include Verdict and Reason. Explain AI.",
             response=response,
-            reference="AI is artificial intelligence enabling machines to learn."
+            reference="AI is artificial intelligence enabling machines to learn.",
         )
         result["model"] = model
         results.append(result)
@@ -294,11 +282,7 @@ def test_empty_response_handling():
     config_path = str(Path(__file__).parent.parent / "app/configs/guidelines.yaml")
     service = EvaluationService(guideline_config_path=config_path)
 
-    result = service.evaluate(
-        prompt="Answer this question.",
-        response="",
-        reference=""
-    )
+    result = service.evaluate(prompt="Answer this question.", response="", reference="")
 
     assert result["instruction_following"] == 1
     assert result["accuracy"] == 0

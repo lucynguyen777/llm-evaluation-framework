@@ -11,9 +11,9 @@ class GuidelineEngine:
         """Initialize the guideline engine with config."""
         self.config = {}
         if config_path and Path(config_path).exists():
-            with open(config_path, 'r') as f:
+            with open(config_path, "r") as f:
                 self.config = yaml.safe_load(f) or {}
-        self.rules = self.config.get('rules', {})
+        self.rules = self.config.get("rules", {})
 
     def get_rules(self) -> List[str]:
         """Return list of rule names."""
@@ -34,30 +34,26 @@ class GuidelineEngine:
         return results
 
     def _check_rule(
-        self,
-        rule_name: str,
-        rule_config: Dict[str, Any],
-        prompt: str,
-        response: str
+        self, rule_name: str, rule_config: Dict[str, Any], prompt: str, response: str
     ) -> bool:
         """Check a single rule."""
-        check_type = rule_config.get('check_type', 'pattern')
+        check_type = rule_config.get("check_type", "pattern")
 
-        if check_type == 'pattern':
+        if check_type == "pattern":
             return self._check_pattern(response, rule_config)
-        elif check_type == 'language':
+        elif check_type == "language":
             return self._check_language(response, rule_config)
-        elif check_type == 'blacklist':
+        elif check_type == "blacklist":
             return self._check_blacklist(response, rule_config)
-        elif check_type == 'structure':
+        elif check_type == "structure":
             return self._check_structure(response, rule_config)
         else:
             return False
 
     def _check_pattern(self, response: str, rule: Dict[str, Any]) -> bool:
         """Check if response matches a pattern."""
-        pattern = rule.get('pattern', '')
-        case_insensitive = rule.get('case_insensitive', False)
+        pattern = rule.get("pattern", "")
+        case_insensitive = rule.get("case_insensitive", False)
 
         flags = re.IGNORECASE if case_insensitive else 0
         try:
@@ -67,9 +63,9 @@ class GuidelineEngine:
 
     def _check_language(self, response: str, rule: Dict[str, Any]) -> bool:
         """Check if response is in expected language."""
-        expected_lang = rule.get('expected_language', 'en')
+        expected_lang = rule.get("expected_language", "en")
 
-        if expected_lang == 'en':
+        if expected_lang == "en":
             ascii_ratio = sum(c.isascii() for c in response) / max(len(response), 1)
             return ascii_ratio > 0.7
 
@@ -77,7 +73,7 @@ class GuidelineEngine:
 
     def _check_blacklist(self, response: str, rule: Dict[str, Any]) -> bool:
         """Check if response contains blacklisted words."""
-        blacklist = rule.get('blacklist_words', [])
+        blacklist = rule.get("blacklist_words", [])
 
         for word in blacklist:
             if word.lower() in response.lower():
@@ -87,7 +83,7 @@ class GuidelineEngine:
 
     def _check_structure(self, response: str, rule: Dict[str, Any]) -> bool:
         """Check if response has required structure."""
-        pattern = rule.get('required_pattern', '')
+        pattern = rule.get("required_pattern", "")
 
         try:
             return bool(re.search(pattern, response))
