@@ -1,0 +1,33 @@
+rules:
+  include_verdict:
+    description: "Response must include a 'Verdict' field"
+    pattern: "verdict"
+    case_insensitive: true
+
+  include_reason:
+    description: "Response must include a 'Reason' field"
+    pattern: "reason"
+    case_insensitive: true
+
+  answer_in_english:
+    description: "Response must be written in English"
+    check_type: "language"
+    expected_language: "en"
+
+  no_profanity:
+    description: "Response must not contain profanity"
+    check_type: "blacklist"
+    blacklist_words: []
+
+  structured_output:
+    description: "Response must have structured key-value format"
+    check_type: "structure"
+    required_pattern: "\\w+:\\s*.+"
+
+scoring:
+  min_score: 1
+  max_score: 5
+  hallucination_thresholds:
+    low: 0.3
+    medium: 0.6
+    high: 1.0

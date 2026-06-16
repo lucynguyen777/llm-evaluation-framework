@@ -1,0 +1,107 @@
+[
+  {
+    "id": 1,
+    "model": "gpt-4",
+    "prompt": "Answer only in English and include Verdict and Reason. Is the sky blue?",
+    "response": "Verdict: True\nReason: The sky appears blue due to Rayleigh scattering of sunlight by the atmosphere.",
+    "reference": "The sky is blue because of Rayleigh scattering where shorter blue wavelengths are scattered more than other colors."
+  },
+  {
+    "id": 2,
+    "model": "gpt-4",
+    "prompt": "List the main causes of climate change.",
+    "response": "Main causes of climate change include: 1) Burning of fossil fuels releasing CO2, 2) Deforestation reducing carbon absorption, 3) Agricultural emissions including methane, 4) Industrial processes, 5) Waste decomposition.",
+    "reference": "Climate change is primarily caused by greenhouse gas emissions from burning fossil fuels, deforestation, agriculture, and industrial processes."
+  },
+  {
+    "id": 3,
+    "model": "claude-3",
+    "prompt": "Answer only in English and include Verdict and Reason. Is water wet?",
+    "response": "Verdict: Yes\nReason: Water molecules exhibit cohesive properties that cause them to adhere to surfaces, creating the sensation of wetness.",
+    "reference": "Water is considered wet because its molecules stick to surfaces, causing adhesion."
+  },
+  {
+    "id": 4,
+    "model": "claude-3",
+    "prompt": "Explain the concept of machine learning in simple terms.",
+    "response": "Machine learning is a type of artificial intelligence that allows computers to learn from data without being explicitly programmed. It's like teaching a computer by showing it examples rather than giving it step-by-step instructions.",
+    "reference": "Machine learning is a subset of AI where systems learn and improve from experience without explicit programming."
+  },
+  {
+    "id": 5,
+    "model": "gemini",
+    "prompt": "Answer only in English. What is the capital of France?",
+    "response": "The capital of France is Paris.",
+    "reference": "Paris is the capital and most populous city of France."
+  },
+  {
+    "id": 6,
+    "model": "gemini",
+    "prompt": "What are the benefits of regular exercise?",
+    "response": "Regular exercise provides numerous benefits: improved cardiovascular health, stronger muscles and bones, better mental health, weight management, reduced risk of chronic diseases, and improved sleep quality.",
+    "reference": "Exercise benefits include improved cardiovascular health, mental well-being, weight management, and disease prevention."
+  },
+  {
+    "id": 7,
+    "model": "gpt-4",
+    "prompt": "Explain quantum computing in 2 paragraphs.",
+    "response": "Quantum computing uses quantum bits or qubits that can exist in multiple states simultaneously, unlike classical bits that are either 0 or 1. This property, called superposition, allows quantum computers to process certain calculations exponentially faster.\n\nHowever, quantum computers are still in early development and face challenges like quantum decoherence and error correction. They are not expected to replace classical computers but will excel at specific problems like cryptography, drug discovery, and optimization.",
+    "reference": "Quantum computing leverages qubits and superposition to perform calculations. Current challenges include decoherence and error correction."
+  },
+  {
+    "id": 8,
+    "model": "claude-3",
+    "prompt": "Provide a recipe for chocolate chip cookies.",
+    "response": "Chocolate Chip Cookies Recipe:\n- 2 1/4 cups flour\n- 1 tsp baking soda\n- 1 tsp salt\n- 1 cup butter\n- 3/4 cup sugar\n- 3/4 cup brown sugar\n- 2 eggs\n- 2 cups chocolate chips\n\nBake at 375°F for 9-11 minutes.",
+    "reference": "Classic chocolate chip cookies require flour, butter, sugars, eggs, vanilla, and chocolate chips."
+  },
+  {
+    "id": 9,
+    "model": "gpt-4",
+    "prompt": "List the planets in our solar system in order from the Sun.",
+    "response": "Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune",
+    "reference": "The eight planets in order from the Sun are: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune."
+  },
+  {
+    "id": 10,
+    "model": "claude-3",
+    "prompt": "What is the theory of relativity?",
+    "response": "The theory of relativity, developed by Albert Einstein, consists of two parts: special relativity (1905) and general relativity (1915). Special relativity states that the laws of physics are the same in all inertial frames and that the speed of light is constant. General relativity describes gravity as the curvature of spacetime caused by mass and energy.",
+    "reference": "Einstein's theory of relativity describes physics in inertial frames and gravity as spacetime curvature."
+  },
+  {
+    "id": 11,
+    "model": "gemini",
+    "prompt": "What is the population of Tokyo?",
+    "response": "The population of Tokyo is about 13.96 million people within the city proper. The greater Tokyo metropolitan area has over 37 million people, making it the largest metropolitan area in the world.",
+    "reference": "Tokyo has approximately 14 million residents in the city proper and over 37 million in the metro area."
+  },
+  {
+    "id": 12,
+    "model": "gpt-4",
+    "prompt": "Explain the difference between HTTP and HTTPS.",
+    "response": "HTTP (Hypertext Transfer Protocol) transmits data in plain text, making it vulnerable to interception. HTTPS (HTTP Secure) uses SSL/TLS encryption to protect data in transit, ensuring confidentiality and integrity. HTTPS is now the standard for secure web browsing.",
+    "reference": "HTTPS adds SSL/TLS encryption to HTTP, making data transmission secure."
+  },
+  {
+    "id": 13,
+    "model": "claude-3",
+    "prompt": "What are the three states of matter?",
+    "response": "The three fundamental states of matter are solid, liquid, and gas. Solids have fixed shape and volume, liquids have fixed volume but take the shape of their container, and gases have neither fixed shape nor volume.",
+    "reference": "The three states of matter are solid, liquid, and gas."
+  },
+  {
+    "id": 14,
+    "model": "gemini",
+    "prompt": "Describe the water cycle.",
+    "response": "The water cycle describes how water moves through the environment. Water evaporates from surfaces, condenses into clouds, and precipitates back to Earth as rain or snow. It then collects in bodies of water or flows across land, repeating the cycle.",
+    "reference": "The water cycle involves evaporation, condensation, precipitation, and collection."
+  },
+  {
+    "id": 15,
+    "model": "gpt-4",
+    "prompt": "What is the speed of light?",
+    "response": "The speed of light in a vacuum is approximately 299,792,458 meters per second (about 186,282 miles per second). It is a fundamental constant of nature and the maximum speed at which information can travel.",
+    "reference": "The speed of light is 299,792,458 m/s in vacuum."
+  }
+]
