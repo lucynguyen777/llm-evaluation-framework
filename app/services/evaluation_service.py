@@ -44,21 +44,25 @@ class EvaluationService:
         )
         guideline_result = self.guideline_engine.check_compliance(prompt, response)
 
-        # Calculate overall score
+        # Calculate overall score (skip accuracy/hallucination weights if no reference)
+        ref_available = bool(reference and reference.strip())
         overall_score = self._calculate_overall_score(
             instruction_result.get("instruction_following_score", 3),
             accuracy_result.get("accuracy_score", 3),
             completeness_result.get("completeness_score", 3),
             hallucination_result.get("hallucination_risk", "medium"),
+            ref_available,
         )
 
-        # Determine if passed
-        passed = (
-            instruction_result.get("passed", False)
-            and accuracy_result.get("passed", False)
-            and completeness_result.get("passed", False)
-            and hallucination_result.get("passed", False)
-        )
+        # Determine if passed (only check applicable metrics)
+        passed_checks = []
+        passed_checks.append(instruction_result.get("passed", False))
+        passed_checks.append(completeness_result.get("passed", False))
+        # Only check accuracy/hallucination when reference is available
+        if reference:
+            passed_checks.append(accuracy_result.get("passed", False))
+            passed_checks.append(hallucination_result.get("passed", False))
+        passed = all(passed_checks)
 
         return {
             "instruction_following": instruction_result.get(
@@ -85,25 +89,36 @@ class EvaluationService:
         accuracy_score: int,
         completeness_score: int,
         hallucination_risk: str,
+        ref_available: bool = False,
     ) -> float:
         """Calculate weighted overall score."""
         # Convert hallucination risk to score
         hallucination_score_map = {"low": 5, "medium": 3, "high": 1}
         hallucination_score = hallucination_score_map.get(hallucination_risk, 3)
 
-        # Weighted average
-        weights = {
-            "instruction": 0.3,
-            "accuracy": 0.3,
-            "completeness": 0.2,
-            "hallucination": 0.2,
-        }
-
-        overall = (
-            instruction_score * weights["instruction"]
-            + accuracy_score * weights["accuracy"]
-            + completeness_score * weights["completeness"]
-            + hallucination_score * weights["hallucination"]
-        )
+        # Weighted average - adjust when no reference
+        if ref_available:
+            weights = {
+                "instruction": 0.3,
+                "accuracy": 0.3,
+                "completeness": 0.2,
+                "hallucination": 0.2,
+            }
+            overall = (
+                instruction_score * weights["instruction"]
+                + accuracy_score * weights["accuracy"]
+                + completeness_score * weights["completeness"]
+                + hallucination_score * weights["hallucination"]
+            )
+        else:
+            # No reference: accuracy info unreliable → skip those metrics
+            weights = {
+                "instruction": 0.5,
+                "completeness": 0.5,
+            }
+            overall = (
+                instruction_score * weights["instruction"]
+                + completeness_score * weights["completeness"]
+            )
 
         return round(overall, 2)

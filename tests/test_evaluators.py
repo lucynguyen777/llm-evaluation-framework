@@ -288,5 +288,6 @@ def test_empty_response_handling():
     assert result["accuracy"] == 0
     assert result["completeness"] == 1
     assert result["hallucination"] == "high"
-    assert result["overall_score"] == 0.7
+    # Empty reference → skip accuracy/hallucination weights → score = 0.5*1 + 0.5*1 = 1.0
+    assert result["overall_score"] == 1.0
     assert result["passed"] is False
